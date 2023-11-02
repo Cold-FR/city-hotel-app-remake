@@ -51,7 +51,6 @@
       ]
     },
     "nsis": {
-      "remoteReleases": true,
       "installerIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
       "uninstallDisplayName": "HabboCity",
