@@ -5,3 +5,5 @@ window.addEventListener('load', async () => {
     if (document.getElementById('version')) document.getElementById('version').innerText = version;
 });
 
+///ipc.clearCache();
+

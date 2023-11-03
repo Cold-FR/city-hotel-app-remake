@@ -57,7 +57,7 @@
       "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": false,
-      "artifactName": "City-${version}.${ext}",
+      "artifactName": "HabboCity-${version}.${ext}",
       "include": "build/installer.nsh"
     },
     "afterSign": "build/SignHook.js",
