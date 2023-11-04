@@ -2,7 +2,11 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
     getVersion: () => ipcRenderer.invoke('getVersion'),
-    clearCache: () => ipcRenderer.send('clearCache')
+    clearCache: () => ipcRenderer.send('clearCache'),
+    zoomIn: () => ipcRenderer.send('zoomIn'),
+    zoomReset: () => ipcRenderer.send('zoomReset'),
+    zoomOut: () => ipcRenderer.send('zoomOut'),
+    fullScreen: () => ipcRenderer.send('fullscreen')
 });
 
 ipcRenderer.on('noUpdate', () => {
@@ -24,3 +28,7 @@ ipcRenderer.on('downloadProgress', (data) => {
         updateCount = 1;
     }*/
 });
+
+ipcRenderer.on('getLinkAdress', () => ipcRenderer.send('sendLinkAdress', `${document.getElementById('iframe').contentWindow.location.href}`));
+
+ipcRenderer.on('reloadPage', () => document.getElementById('iframe').contentWindow.location.reload());

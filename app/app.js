@@ -1,7 +1,9 @@
-const { app, BrowserWindow, BrowserView, globalShortcut, dialog} = require('electron');
+const { app, BrowserWindow, dialog, clipboard} = require('electron');
 const ipc = require('electron').ipcMain;
 const path = require('node:path');
+
 const logger = require('electron-log');
+const contextMenu = require('electron-context-menu');
 
 const DeltaUpdater = require('@electron-delta/updater');
 const deltaUpdater = new DeltaUpdater({
@@ -37,6 +39,8 @@ const clearCache = async () => {
     app.exit();
 }
 
+const toggleFullScreen = () => win.isFullScreen() ? win.setFullScreen(false) : win.setFullScreen(true);
+
 app.whenReady().then(async () => {
     try {
         await deltaUpdater.boot({
@@ -47,12 +51,12 @@ app.whenReady().then(async () => {
     }
 
     createWindow();
-    //autoUpdater.checkForUpdatesAndNotify();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
 
+    /// IPC
     ipc.handle('getVersion', () => app.getVersion());
 
     ipc.on('clearCache', () => {
@@ -65,12 +69,25 @@ app.whenReady().then(async () => {
             if (res.response === 0) clearCache();
         });
     });
+
+    ipc.on('fullscreen', () => toggleFullScreen());
+
+    ipc.on('zoomIn', () => {
+        let factor = win.webContents.getZoomFactor();
+        if (factor < 3) win.webContents.setZoomFactor(factor + 0.01);
+    });
+    ipc.on('zoomReset', () => win.webContents.setZoomFactor(1));
+    ipc.on('zoomOut', () => {
+        let factor = win.webContents.getZoomFactor();
+        if (factor > 0.3) win.webContents.setZoomFactor(factor - 0.01);
+    });
 });
 
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
+/// UPDATER
 deltaUpdater.on('checking-for-update', () => {
     win.send('checkingUpdate', '');
 });
@@ -116,9 +133,65 @@ deltaUpdater.on('update-downloaded', () => {
     deltaUpdater.ensureSafeQuitAndInstall();
 /*if (appStart === true) {
         clearInterval(checkForUpdate);
-        sendWindow('askForUpdate', '');
-        ipcMain.on('responseForUpdate', (e, response) => {
+        win.send('askForUpdate', '');
+        ipc.on('responseForUpdate', (e, response) => {
             if (response === true) autoUpdater.quitAndInstall();
         });
     }*/
+});
+
+contextMenu({
+    prepend: (defaultActions, parameters, browserWindow) => [
+        {
+            label: 'Copier l\'adresse de la page',
+            visible: true,
+            click: () => {
+                win.send('getLinkAdress', '');
+                ipc.on('sendLinkAdress', (e, data) => {
+                    clipboard.writeText(data);
+                });
+            }
+        },
+        {
+            label: 'Recharger la page',
+            visible: true,
+            icon: path.join(__dirname, `/assets/images/buttons/reload.png`),
+            click: () => win.send('reloadPage', '')
+        },
+        {
+            label: 'Rejoindre CityCom',
+            visible: true,
+            icon: path.join(__dirname, `/assets/images/buttons/discord.png`),
+            click: () => require('electron').shell.openExternal('https://discord.gg/EDtGr4Cr7V')
+        },
+        {
+            label: 'Plein écran',
+            visible: true,
+            icon: path.join(__dirname, `/assets/images/buttons/screen.png`),
+            click: () => toggleFullScreen()
+        },
+        {
+            type: 'separator',
+            visible: parameters.mediaType === 'image',
+        },
+        {
+            label: 'Ouvrir l\'image dans un nouvel onglet (Navigateur par défaut)',
+            visible: parameters.mediaType === 'image',
+            click: () => require('electron').shell.openExternal(`${parameters.srcURL}`)
+        }
+    ],
+    labels: {
+        copy: 'Copier',
+        paste: 'Coller',
+        cut: 'Couper',
+        searchWithGoogle: 'Rechercher "{selection}" avec Google',
+        learnSpelling: 'Enregistrer "{selection}" dans le dictionnaire',
+        saveImageAs: 'Enregistrer l\'image sous',
+        copyImage: 'Copier l\'image',
+        copyImageAddress: 'Copier l\'adresse de l\'image',
+        copyLink: 'Copier l\'adresse du lien',
+        selectAll: 'Sélectionner tout'
+    },
+    showCopyImageAddress: true,
+    showSaveImageAs: true
 });
