@@ -1,6 +1,6 @@
 {
   "name": "city-app",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "productName": "HabboCity V2",
   "description": "HabboCity: Créez votre avatar, décorez votre appartement ! Tchattez avec vos amis.",
   "homepage": "https://habbocity.me",
@@ -24,9 +24,9 @@
   "dependencies": {
     "@electron-delta/updater": "^0.1.17",
     "axios": "^1.6.0",
+    "electron-context-menu": "^3.6.1",
     "electron-log": "^5.0.0",
-    "electron-updater": "^6.1.4",
-    "install": "^0.13.0"
+    "electron-updater": "^6.1.4"
   },
   "build": {
     "appId": "com.electron.CityAppV2",
