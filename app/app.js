@@ -1,9 +1,12 @@
-const { app, BrowserWindow, session, BrowserView, globalShortcut, dialog} = require('electron');
-const path = require('node:path');
+const { app, BrowserWindow, BrowserView, globalShortcut, dialog} = require('electron');
 const ipc = require('electron').ipcMain;
+const path = require('node:path');
+const logger = require('electron-log');
 const { autoUpdater } = require('electron-updater');
-const {format} = require("url");
 autoUpdater.autoDownload = false;
+
+const DeltaUpdater = require('@electron-delta/updater');
+
 let win = null;
 let checkUpdate = null;
 
@@ -14,18 +17,11 @@ const createWindow = () => {
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
-            webSecurity: true,
-            session: session.fromPartition('persist:iframeSession')
+            webSecurity: true
         }
     });
 
     win.setMenu(null);
-
-    /*win.loadURL(format({
-        pathname: path.join(__dirname, `index.html`),
-        protocol: 'file:',
-        slashes: true
-    }));*/
 
    win.loadFile(path.join(__dirname, 'index.html')).then(() => {
         win.maximize();
@@ -40,41 +36,26 @@ const clearCache = async () => {
     app.exit();
 }
 
-const createView = () => {
-    const [width, height] = win.getSize();
-    const view = new BrowserView({
-        webPreferences: {
-            preload: path.join(__dirname, 'preload-view.js')
-        }
+app.whenReady().then(async () => {
+    const deltaUpdater = new DeltaUpdater({
+        logger,
+        autoUpdater
     });
-    win.addBrowserView(view);
-    view.setBounds({
-        x: 0,
-        y: 0,
-        width: width - 16,
-        height: height - 39,
-    });
-    view.setAutoResize({
-        width: true,
-        height: true
-    });
-    view.webContents.openDevTools();
-    view.webContents.loadURL('https://www.habbocity.me');
-}
 
-app.whenReady().then(() => {
-    session.defaultSession.cookies.restore().catch((error) => {
-        console.error('Error restoring cookies:', error);
-    });
+    try {
+        await deltaUpdater.boot({
+            splashScreen: true,
+        });
+    } catch (error) {
+        logger.error(error);
+    }
 
     createWindow();
-    autoUpdater.checkForUpdatesAndNotify();
+    //autoUpdater.checkForUpdatesAndNotify();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });
-
-    //createView();
 
     ipc.handle('getVersion', () => app.getVersion());
 
@@ -94,16 +75,11 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
-app.on('before-quit', () => {
-    session.defaultSession.cookies.flushStore();
-});
-
 autoUpdater.on('checking-for-update', () => {
     win.send('checkingUpdate', '');
 });
 
 autoUpdater.on('update-not-available', () => {
-    //createView();
     win.send('noUpdate', '');
     checkUpdate = setInterval(() =>
         autoUpdater.checkForUpdatesAndNotify(), 3e5);
