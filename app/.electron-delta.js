@@ -1,5 +1,5 @@
 const DeltaBuilder = require("@electron-delta/builder");
-const {productName} = require('package.json');
+const {productName} = require('./package.json');
 
 const path = require("path");
 const getPreviousReleases = require("./build/get-previous-releases");
