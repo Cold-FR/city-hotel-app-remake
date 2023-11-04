@@ -2,10 +2,11 @@ const { app, BrowserWindow, BrowserView, globalShortcut, dialog} = require('elec
 const ipc = require('electron').ipcMain;
 const path = require('node:path');
 const logger = require('electron-log');
-const { autoUpdater } = require('electron-updater');
-autoUpdater.autoDownload = false;
 
 const DeltaUpdater = require('@electron-delta/updater');
+const deltaUpdater = new DeltaUpdater({
+    logger
+});
 
 let win = null;
 let checkUpdate = null;
@@ -25,7 +26,7 @@ const createWindow = () => {
 
    win.loadFile(path.join(__dirname, 'index.html')).then(() => {
         win.maximize();
-        win.webContents.openDevTools({ mode: 'detach' });
+        win.webContents.openDevTools();
     });
 };
 
@@ -37,14 +38,9 @@ const clearCache = async () => {
 }
 
 app.whenReady().then(async () => {
-    const deltaUpdater = new DeltaUpdater({
-        logger,
-        autoUpdater
-    });
-
     try {
         await deltaUpdater.boot({
-            splashScreen: true,
+            splashScreen: false,
         });
     } catch (error) {
         logger.error(error);
@@ -75,33 +71,24 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
-autoUpdater.on('checking-for-update', () => {
+deltaUpdater.on('checking-for-update', () => {
     win.send('checkingUpdate', '');
 });
 
-autoUpdater.on('update-not-available', () => {
+deltaUpdater.on('update-not-available', () => {
     win.send('noUpdate', '');
     checkUpdate = setInterval(() =>
-        autoUpdater.checkForUpdatesAndNotify(), 3e5);
+        deltaUpdater.checkForUpdates(), 3e5);
 });
 
-/*
-autoUpdater.on('checking-for-update', () => {
-    if (appStart === false) sendWindow('checking-for-update', '');
+deltaUpdater.on('error', (err) =>logger.error(err));
+
+deltaUpdater.on('update-available', () => {
+    win.send('updateAvailable', '');
+    //clearInterval(checkForUpdate);
 });
-autoUpdater.on('update-available', () => {
-    appStart === false ? sendWindow('update-available', '') : clearInterval(checkForUpdate);
-});
-autoUpdater.on('update-not-available', () => {
-    if(appStart === false) {
-        sendWindow('update-not-available', '');
-        sendWindow('checkDiscordItem', '');
-        appStart = true;
-        checkForUpdate = setInterval(async () => await autoUpdater.checkForUpdatesAndNotify(), 3e5);
-    }
-});
-autoUpdater.on('error', (err) => sendWindow('error', 'Error: ' + err));
-autoUpdater.on('download-progress', (d) => {
+
+deltaUpdater.on('download-progress', (d) => {
     function formatBytes(bytes, decimals = 2) {
         if (bytes === 0) return '0 Bytes';
 
@@ -113,26 +100,25 @@ autoUpdater.on('download-progress', (d) => {
 
         return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
-    mainWindow.setProgressBar(0);
-    sendWindow('download-progress', {
+
+    win.setProgressBar(0);
+    win.send('downloadProgress', {
         speed: formatBytes(d.bytesPerSecond),
         percent: d.percent,
         transferred: formatBytes(d.transferred),
-        total: formatBytes(d.total),
-        inBack: appStart
+        total: formatBytes(d.total)
+        //inBack: appStart
     });
-    mainWindow.setProgressBar(d.percent / 100);
+    win.setProgressBar(d.percent / 100);
 });
-autoUpdater.on('update-downloaded', () => {
-    if (appStart === false) {
-        sendWindow('update-downloaded', 'Update downloaded');
-        autoUpdater.quitAndInstall();
-    } else if (appStart === true) {
+
+deltaUpdater.on('update-downloaded', () => {
+    deltaUpdater.ensureSafeQuitAndInstall();
+/*if (appStart === true) {
         clearInterval(checkForUpdate);
         sendWindow('askForUpdate', '');
         ipcMain.on('responseForUpdate', (e, response) => {
             if (response === true) autoUpdater.quitAndInstall();
         });
-    }
+    }*/
 });
-*/
