@@ -130,7 +130,7 @@ deltaUpdater.on('download-progress', (d) => {
 });
 
 deltaUpdater.on('update-downloaded', () => {
-    deltaUpdater.ensureSafeQuitAndInstall();
+    deltaUpdater.quitAndInstall();
 /*if (appStart === true) {
         clearInterval(checkForUpdate);
         win.send('askForUpdate', '');
