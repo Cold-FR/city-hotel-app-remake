@@ -107,3 +107,5 @@ dist
 app/package-lock.json
 
 /app/release/
+
+/app/token.json
