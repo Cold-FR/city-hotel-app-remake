@@ -5,5 +5,11 @@ window.addEventListener('load', async () => {
     if (document.getElementById('version')) document.getElementById('version').innerText = version;
 });
 
+if(document.getElementById('buttons')) {
+    document.getElementById('close').addEventListener('click', () => {
+        document.getElementById('buttons').classList.toggle('opened');
+    });
+}
+
 ///ipc.clearCache();
 

@@ -1,4 +1,4 @@
-.buttons {
+#buttons {
     z-index: 9999999;
     margin-top: 20px;
     position: fixed;
@@ -6,8 +6,16 @@
     right: 0;
     bottom: 100px;
     width: 50px;
-    max-width: 50px;
+    max-width: 0px;
     transition: .1s;
+}
+
+#buttons.opened {
+    max-width: 50px;
+}
+
+#buttons.opened #close-button {
+    transform: scaleX(-1);
 }
 
 #close {
@@ -30,7 +38,7 @@
     background: url('../images/buttons/close.png') -18px 0;
 }
 
-.buttons .button {
+#buttons .button {
     position: relative;
     z-index: 9999;
     height: 36px;
@@ -45,15 +53,15 @@
     border-radius: 100%;
 }
 
-.buttons .button:last-child {
+#buttons .button:last-child {
     margin-bottom: 6px;
 }
 
-.buttons .button:hover .tooltip {
+#buttons .button:hover .tooltip {
     display: block;
 }
 
-.buttons .button .tooltip {
+#buttons .button .tooltip {
     position: absolute;
     background: white;
     display: none;
@@ -65,7 +73,7 @@
     border-radius: 10px;
 }
 
-.buttons .button .tooltip .arrow {
+#buttons .button .tooltip .arrow {
     width: 0;
     right: -6px;
     top: 12px;
@@ -76,51 +84,51 @@
     border-color: transparent transparent transparent #ffffff;
 }
 
-.buttons .button .icon {
+#buttons .button .icon {
     height: 25px;
     width: 25px;
 }
 
-.buttons .button .out {
+#buttons .button .out {
     background: url('../images/buttons/out.png');
 }
 
-.buttons .button .screen {
+#buttons .button .screen {
     background: url('../images/buttons/screen.png');
 }
 
-.buttons .button .reload {
+#buttons .button .reload {
     background: url('../images/buttons/reload.png');
 }
 
-.buttons .button .cache {
+#buttons .button .cache {
     background: url('../images/buttons/cache.png');
 }
 
-.buttons .button .in {
+#buttons .button .in {
     background: url('../images/buttons/in.png');
 }
 
-.buttons .button .reset {
+#buttons .button .reset {
     background: url('../images/buttons/reset.png');
 }
 
-.buttons .button .all {
+#buttons .button .all {
     background: url('../images/buttons/all.png');
 }
 
-.buttons .button .mentions {
+#buttons .button .mentions {
     background: url('../images/buttons/mentions.png');
 }
 
-.buttons .button .alerts {
+#buttons .button .alerts {
     background: url('../images/buttons/alerts.png');
 }
 
-.buttons .button .nothing {
+#buttons .button .nothing {
     background: url('../images/buttons/nothing.png');
 }
 
-.buttons .button:hover {
+#buttons .button:hover {
     background: #00000073;
 }
