@@ -1,7 +1,7 @@
 {
   "name": "city-app",
-  "version": "2.0.0",
-  "productName": "HabboCity",
+  "version": "2.0.1",
+  "productName": "HabboCity V2",
   "description": "HabboCity: Créez votre avatar, décorez votre appartement ! Tchattez avec vos amis.",
   "homepage": "https://habbocity.me",
   "main": "app.js",
@@ -16,19 +16,22 @@
   },
   "license": "ISC",
   "devDependencies": {
+    "@electron-delta/builder": "^0.1.17",
+    "@electron/notarize": "^1.2.4",
     "electron": "^27.0.3",
-    "electron-builder": "^24.6.4",
-    "@electron/notarize": "^1.2.4"
+    "electron-builder": "^24.6.4"
   },
   "dependencies": {
-    "electron-updater": "^6.1.4"
+    "@electron-delta/updater": "^0.1.17",
+    "axios": "^1.6.0",
+    "electron-log": "^5.0.0",
+    "electron-updater": "^6.1.4",
+    "install": "^0.13.0"
   },
   "build": {
-    "appId": "me.habbocity.CityApp",
+    "appId": "com.electron.CityAppV2",
+    "afterAllArtifactBuild": ".electron-delta.js",
     "files": "!build/SignHook.js",
-    "extraResources": [
-      "./discord/**"
-    ],
     "directories": {
       "output": "release"
     },
