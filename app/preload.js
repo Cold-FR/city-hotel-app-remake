@@ -9,15 +9,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     fullScreen: () => ipcRenderer.send('fullscreen')
 });
 
-ipcRenderer.on('noUpdate', () => {
-    document.getElementById('connexion').innerText = 'Aucune mise à jour';
-    document.getElementById('updater').style.display = 'none';
-});
-
-ipcRenderer.on('checkingUpdate', () => {
-    document.getElementById('connexion').innerText = 'Recherche de mise à jour...';
-});
-
 ipcRenderer.on('downloadProgress', (data) => {
     document.getElementById('connexion').innerText = 'Téléchargement en cours...';
     document.getElementById('progression').innerHTML =

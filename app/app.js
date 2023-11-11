@@ -1,4 +1,4 @@
-const { app, BrowserWindow, dialog, clipboard} = require('electron');
+const {app, BrowserWindow, dialog, clipboard} = require('electron');
 const ipc = require('electron').ipcMain;
 const path = require('node:path');
 
@@ -26,7 +26,7 @@ const createWindow = () => {
 
     win.setMenu(null);
 
-   win.loadFile(path.join(__dirname, 'index.html')).then(() => {
+    win.loadFile(path.join(__dirname, 'index.html')).then(() => {
         win.maximize();
         win.webContents.openDevTools();
     });
@@ -44,7 +44,7 @@ const toggleFullScreen = () => win.isFullScreen() ? win.setFullScreen(false) : w
 app.whenReady().then(async () => {
     try {
         await deltaUpdater.boot({
-            splashScreen: false,
+            splashScreen: true
         });
     } catch (error) {
         logger.error(error);
@@ -88,23 +88,6 @@ app.on('window-all-closed', () => {
 });
 
 /// UPDATER
-deltaUpdater.on('checking-for-update', () => {
-    win.send('checkingUpdate', '');
-});
-
-deltaUpdater.on('update-not-available', () => {
-    win.send('noUpdate', '');
-    checkUpdate = setInterval(() =>
-        deltaUpdater.checkForUpdates(), 3e5);
-});
-
-deltaUpdater.on('error', (err) =>logger.error(err));
-
-deltaUpdater.on('update-available', () => {
-    win.send('updateAvailable', '');
-    //clearInterval(checkForUpdate);
-});
-
 deltaUpdater.on('download-progress', (d) => {
     function formatBytes(bytes, decimals = 2) {
         if (bytes === 0) return '0 Bytes';
@@ -127,17 +110,6 @@ deltaUpdater.on('download-progress', (d) => {
         //inBack: appStart
     });
     win.setProgressBar(d.percent / 100);
-});
-
-deltaUpdater.on('update-downloaded', () => {
-    deltaUpdater.quitAndInstall();
-/*if (appStart === true) {
-        clearInterval(checkForUpdate);
-        win.send('askForUpdate', '');
-        ipc.on('responseForUpdate', (e, response) => {
-            if (response === true) autoUpdater.quitAndInstall();
-        });
-    }*/
 });
 
 contextMenu({
