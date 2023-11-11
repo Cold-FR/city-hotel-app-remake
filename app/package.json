@@ -22,7 +22,7 @@
     "electron-builder": "^24.6.4"
   },
   "dependencies": {
-    "@electron-delta/updater": "^0.1.17",
+    "@electron-delta/updater": "github:Cold-FR/electron-delta-updater",
     "axios": "^1.6.0",
     "electron-context-menu": "^3.6.1",
     "electron-log": "^5.0.0",
