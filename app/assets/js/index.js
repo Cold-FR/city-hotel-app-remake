@@ -1,5 +1,5 @@
 const ipc = window.electronAPI;
-const iframe = document.getElementById('iframe').contentWindow;
+const iframe = document.getElementById('iframe');
 
 window.addEventListener('load', async () => {
     const version = await ipc.getVersion();
@@ -17,7 +17,7 @@ if(document.getElementById('buttons')) {
     document.getElementById('zoomReset').addEventListener('click', () => ipc.zoomReset());
     document.getElementById('zoomOut').addEventListener('click', () => ipc.zoomOut());
 
-    document.getElementById('reload').addEventListener('click', () => iframe.location.reload());
+    document.getElementById('reload').addEventListener('click', () => iframe.src += '');
 }
 
 window.addEventListener('keydown', (e) => e.key === 'F11' ? ipc.fullScreen() : null);
