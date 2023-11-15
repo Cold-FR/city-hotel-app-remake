@@ -4,9 +4,9 @@
   "productName": "HabboCity-V2",
   "description": "HabboCity: Créez votre avatar, décorez votre appartement ! Tchattez avec vos amis.",
   "homepage": "https://habbocity.me",
-  "main": "app.js",
+  "main": "app/app.js",
   "scripts": {
-    "start": "electron .",
+    "start": "electron ./app/app.js",
     "pack": "electron-builder --dir",
     "dist": "electron-builder",
     "dist:mac": "electron-builder --mac",
@@ -33,7 +33,12 @@
   "build": {
     "appId": "com.electron.CityAppV2",
     "afterAllArtifactBuild": ".electron-delta.js",
-    "files": "!build/SignHook.js",
+    "files": [
+      "!build/SignHook.js",
+      "app/**/*",
+      "package.json",
+      "icon.ico"
+    ],
     "directories": {
       "output": "release"
     },

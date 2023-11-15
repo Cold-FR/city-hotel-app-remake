@@ -1,6 +1,6 @@
 const fs = require('fs');
 const path = require('path');
-const s = require("../package");
+const s = require("../package.json");
 const electron_notarize = require('@electron/notarize');
 
 module.exports = async function (params) {
