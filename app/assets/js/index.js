@@ -20,4 +20,7 @@ if(document.getElementById('buttons')) {
     document.getElementById('reload').addEventListener('click', () => iframe.src += '');
 }
 
-window.addEventListener('keydown', (e) => e.key === 'F11' ? ipc.fullScreen() : null);
+window.addEventListener('keydown', (e) => {
+    if(e.key === 'F11') ipc.fullScreen();
+    if(e.key === 'F12') ipc.showDevConsole();
+});

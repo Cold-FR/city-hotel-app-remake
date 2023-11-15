@@ -30,7 +30,6 @@ const createWindow = () => {
 
     win.loadFile(path.join(__dirname, 'index.html')).then(() => {
         win.maximize();
-        win.webContents.openDevTools();
 
         win.webContents.setWindowOpenHandler(({url}) => {
             const urlFormat = new URL(url);
@@ -106,6 +105,7 @@ app.whenReady().then(async () => {
         let factor = win.webContents.getZoomFactor();
         if (factor > 0.3) win.webContents.setZoomFactor(factor - 0.01);
     });
+    ipc.on('openDev', () => win.webContents.openDevTools());
 });
 
 app.on('window-all-closed', () => {
