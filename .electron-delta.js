@@ -18,9 +18,8 @@ const options = {
 };
 
 exports.default = async function (context) {
-    if(context.platformToTargets[0].name === 'mac') return;
+    if(Array.from(context.platformToTargets)[0].name === 'mac') return;
     
-    console.log(context);
     const deltaInstallerFiles = await DeltaBuilder.build({
         context,
         options
