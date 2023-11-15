@@ -101,6 +101,7 @@
       ]
     },
     "linux": {
+      "icon": "icon.png",
       "target": [
         {
           "target": "deb",
