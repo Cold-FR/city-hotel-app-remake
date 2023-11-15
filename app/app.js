@@ -9,6 +9,8 @@ const DeltaUpdater = require('@electron-delta/updater');
 const deltaUpdater = new DeltaUpdater({
     logger
 });
+const debug = require('electron-debug');
+debug({isEnabled: true, showDevTools: false});
 
 let win = null;
 let appStarted = false;
@@ -105,7 +107,6 @@ app.whenReady().then(async () => {
         let factor = win.webContents.getZoomFactor();
         if (factor > 0.3) win.webContents.setZoomFactor(factor - 0.01);
     });
-    ipc.on('openDev', () => win.webContents.openDevTools());
 });
 
 app.on('window-all-closed', () => {

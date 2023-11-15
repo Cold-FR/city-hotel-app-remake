@@ -6,8 +6,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
     zoomIn: () => ipcRenderer.send('zoomIn'),
     zoomReset: () => ipcRenderer.send('zoomReset'),
     zoomOut: () => ipcRenderer.send('zoomOut'),
-    fullScreen: () => ipcRenderer.send('fullscreen'),
-    showDevConsole: () => ipcRenderer.send('openDev')
+    fullScreen: () => ipcRenderer.send('fullscreen')
 });
 
 ipcRenderer.on('downloadProgress', (data) => {

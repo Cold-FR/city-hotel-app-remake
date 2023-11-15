@@ -22,5 +22,4 @@ if(document.getElementById('buttons')) {
 
 window.addEventListener('keydown', (e) => {
     if(e.key === 'F11') ipc.fullScreen();
-    if(e.key === 'F12') ipc.showDevConsole();
 });
