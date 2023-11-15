@@ -1,10 +1,11 @@
 const axios = require("axios").default;
-const {token} = require('../token.json');
 
 const config = {
-  headers: {
+  /*
+    headers: {
     "Authorization": `token ${token}`,
   }
+   */
 };
 
 const getPreviousReleases = async ({ platform, target }) => {
