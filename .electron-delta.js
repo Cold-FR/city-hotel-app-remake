@@ -18,6 +18,7 @@ const options = {
 };
 
 exports.default = async function (context) {
+    console.log(context);
     const deltaInstallerFiles = await DeltaBuilder.build({
         context,
         options
