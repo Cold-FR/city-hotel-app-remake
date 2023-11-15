@@ -1,7 +1,7 @@
 {
   "name": "city-app",
   "version": "2.0.5",
-  "productName": "HabboCity V2",
+  "productName": "HabboCity-V2",
   "description": "HabboCity: Créez votre avatar, décorez votre appartement ! Tchattez avec vos amis.",
   "homepage": "https://habbocity.me",
   "main": "app.js",
@@ -57,11 +57,13 @@
       "installerIcon": "icon.ico",
       "uninstallerIcon": "icon.ico",
       "uninstallDisplayName": "HabboCity",
-      "oneClick": false,
+      "oneClick": true,
       "perMachine": false,
-      "allowToChangeInstallationDirectory": false,
-      "artifactName": "HabboCity-${version}.${ext}",
-      "include": "build/installer.nsh"
+      "allowElevation": true,
+      "runAfterFinish": true,
+      "artifactName": "HabboCity-V2-${version}.${ext}",
+      "differentialPackage": true,
+      "deleteAppDataOnUninstall": true
     },
     "afterSign": "build/SignHook.js",
     "mac": {
