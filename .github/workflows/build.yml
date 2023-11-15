@@ -18,9 +18,13 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: dist
+          name: dist_linux
           path: |
             release
+            !release/linux-unpacked/
+            !release/linux-armv7l-unpacked/
+            !release/linux-arm64-unpacked/
+            !release/builder-debug.yml
 
   build_on_mac:
     runs-on: macos-latest
@@ -38,9 +42,11 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: dist
+          name: dist_macos
           path: |
             release
+            !release/mac/
+            !release/builder-debug.yml
 
   build_on_win:
     runs-on: windows-latest
@@ -58,7 +64,7 @@ jobs:
       - name: Archive production artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: dist
+          name: dist_win
           path: |
             release
             !release/builder-debug.yml
