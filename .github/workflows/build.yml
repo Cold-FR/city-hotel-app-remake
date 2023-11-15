@@ -48,4 +48,8 @@ jobs:
         with:
           name: dist
           path: |
-              release
+            release
+            !release/builder-debug.yml
+            !release/builder-effective-config.yaml
+            !release/win-unpacked/
+            !release/win-ia32-unpacked/
