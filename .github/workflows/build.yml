@@ -35,6 +35,12 @@ jobs:
         run: npm ci
       - name: build
         run: npm run dist
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: |
+            release
 
   build_on_win:
     runs-on: windows-latest
