@@ -83,8 +83,6 @@ app.whenReady().then(async () => {
     });
 
     /// IPC
-    ipc.handle('getVersion', () => app.getVersion());
-
     ipc.on('clearCache', () => {
         dialog.showMessageBox({
             type: 'question',
@@ -113,44 +111,11 @@ app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit();
 });
 
-/// UPDATER
-deltaUpdater.on('download-progress', (d) => {
-    if (appStarted) {
-        function formatBytes(bytes, decimals = 2) {
-            if (bytes === 0) return '0 Bytes';
-
-            const k = 1024;
-            const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-        }
-
-        win.setProgressBar(0);
-        win.send('downloadProgress', {
-            speed: formatBytes(d.bytesPerSecond),
-            percent: d.percent,
-            transferred: formatBytes(d.transferred),
-            total: formatBytes(d.total)
-            //inBack: appStart
-        });
-        win.setProgressBar(d.percent / 100);
-    }
-});
-
 contextMenu({
     prepend: (defaultActions, parameters, browserWindow) => [
         {
-            label: 'Copier l\'adresse de la page',
+            label: 'Version - ' + app.getVersion(),
             visible: true,
-            click: () => {
-                win.send('getLinkAdress', '');
-                ipc.on('sendLinkAdress', (e, data) => {
-                    clipboard.writeText(data);
-                });
-            }
         },
         {
             label: 'Recharger la page',
