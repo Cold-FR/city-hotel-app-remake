@@ -1,11 +1,13 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electronAPI', {
-    clearCache: () => ipcRenderer.send('clearCache'),
+    /*clearCache: () => ipcRenderer.send('clearCache'),
     zoomIn: () => ipcRenderer.send('zoomIn'),
     zoomReset: () => ipcRenderer.send('zoomReset'),
     zoomOut: () => ipcRenderer.send('zoomOut'),
-    fullScreen: () => ipcRenderer.send('fullscreen')
+    reloadView: () => ipcRenderer.send('reloadView')*/
 });
 
-ipcRenderer.on('reloadPage', () => document.getElementById('iframe').src += '');
+window.addEventListener('keydown', (e) => {
+    if(e.key === 'F11') ipcRenderer.send('fullscreen');
+});
