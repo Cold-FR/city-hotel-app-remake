@@ -55,13 +55,28 @@ const createView = () => {
         width: true,
         height: true
     });
-    view.webContents.loadURL('https://www.habbocity.me');
+    view.webContents.loadURL('https://www.habbocity.me').then(() => view.webContents.focus());
     view.webContents.on('did-finish-load', () => setContextMenu());
 };
 
 const reloadView = () => {
     view.webContents.reload();
     setContextMenu();
+};
+
+const handleZoom = (type) => {
+    let factor = view.webContents.getZoomFactor();
+    switch (type) {
+        case 'in':
+            if (factor < 3) view.webContents.setZoomFactor(factor + 0.01);
+            break;
+        case 'out':
+            if (factor > 0.3) view.webContents.setZoomFactor(factor - 0.01);
+            break;
+        case 'reset':
+            view.webContents.setZoomFactor(1)
+            break;
+    }
 };
 
 const setContextMenu = () => {
@@ -79,10 +94,16 @@ const setContextMenu = () => {
                 click: () => clearCache()
             },
             {
-                label: 'Recharger la page',
+                label: 'Recharger la page (F5)',
                 visible: true,
                 icon: path.join(__dirname, `/assets/images/buttons/reload.png`),
                 click: () => reloadView()
+            },
+            {
+                label: 'Plein écran (F11)',
+                visible: true,
+                icon: path.join(__dirname, `/assets/images/buttons/screen.png`),
+                click: () => toggleFullScreen()
             },
             {
                 label: 'Rejoindre CityCom',
@@ -91,10 +112,28 @@ const setContextMenu = () => {
                 click: () => require('electron').shell.openExternal('https://discord.gg/EDtGr4Cr7V')
             },
             {
-                label: 'Plein écran',
+                label: 'Zoom',
                 visible: true,
-                icon: path.join(__dirname, `/assets/images/buttons/screen.png`),
-                click: () => toggleFullScreen()
+                submenu: [
+                    {
+                        label: 'Zoom avant (CTRL + Molette haut)',
+                        visible: true,
+                        icon: path.join(__dirname, '/assets/images/buttons/in.png'),
+                        click: () => handleZoom('in')
+                    },
+                    {
+                        label: 'Zoom par défaut (CTRL + =)',
+                        visible: true,
+                        icon: path.join(__dirname, '/assets/images/buttons/reset.png'),
+                        click: () => handleZoom('reset')
+                    },
+                    {
+                        label: 'Zoom arrière (CTRL + Molette bas)',
+                        visible: true,
+                        icon: path.join(__dirname, '/assets/images/buttons/out.png'),
+                        click: () => handleZoom('out')
+                    }
+                ]
             },
             {
                 type: 'separator',
@@ -139,7 +178,27 @@ const clearCache = async () => {
     });
 };
 
-const toggleFullScreen = () => win.isFullScreen() ? win.setFullScreen(false) : win.setFullScreen(true);
+const toggleFullScreen = () => {
+    if(win.isFullScreen()) {
+        win.setFullScreen(false);
+        const [width, height] = win.getSize();
+        view.setBounds({
+            x:0,
+            y:0,
+            width: width - 16,
+            height: height - 39,
+        });
+    } else {
+        win.setFullScreen(true);
+        const [width, height] = win.getSize();
+        view.setBounds({
+            x:0,
+            y:0,
+            width: width,
+            height: height
+        });
+    }
+};
 
 const handleURL = (url) => {
     const urlFormat = new URL(url);
@@ -182,19 +241,13 @@ app.whenReady().then(async () => {
 
     /// IPC
     ipc.on('fullscreen', () => toggleFullScreen());
-    /*ipc.on('clearCache', () => clearCache());
+    ///ipc.on('clearCache', () => clearCache());
 
-    ipc.on('zoomIn', () => {
-        let factor = win.webContents.getZoomFactor();
-        if (factor < 3) win.webContents.setZoomFactor(factor + 0.01);
-    });
-    ipc.on('zoomReset', () => win.webContents.setZoomFactor(1));
-    ipc.on('zoomOut', () => {
-        let factor = win.webContents.getZoomFactor();
-        if (factor > 0.3) win.webContents.setZoomFactor(factor - 0.01);
-    });
+    ipc.on('zoomIn', () => handleZoom('in'));
+    ipc.on('zoomReset', () => handleZoom('reset'));
+    ipc.on('zoomOut', () => handleZoom('out'));
 
-    ipc.on('reloadView', () => view.webContents.reload());*/
+    ipc.on('reloadView', () => view.webContents.reload());
 });
 
 app.on('window-all-closed', () => {
