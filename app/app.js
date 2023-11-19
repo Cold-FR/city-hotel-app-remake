@@ -56,12 +56,12 @@ const createView = () => {
         height: true
     });
     view.webContents.loadURL('https://www.habbocity.me').then(() => view.webContents.focus());
-    view.webContents.on('did-finish-load', () => setContextMenu());
+    view.webContents.on('did-finish-load', () => setContextMenu(view));
 };
 
 const reloadView = () => {
     view.webContents.reload();
-    setContextMenu();
+    setContextMenu(view);
 };
 
 const handleZoom = (type) => {
@@ -79,9 +79,9 @@ const handleZoom = (type) => {
     }
 };
 
-const setContextMenu = () => {
+const setContextMenu = (target = undefined) => {
     contextMenu({
-        window: view,
+        window: target,
         prepend: (defaultActions, parameters, browserWindow) => [
             {
                 label: 'Version - ' + app.getVersion(),
@@ -223,6 +223,8 @@ const handleURL = (url) => {
 };
 
 app.whenReady().then(async () => {
+    setContextMenu();
+
     try {
         await deltaUpdater.boot({
             splashScreen: true
