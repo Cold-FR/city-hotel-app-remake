@@ -2,6 +2,10 @@ const {app, BrowserWindow, BrowserView, dialog, clipboard} = require('electron')
 const ipc = require('electron').ipcMain;
 const path = require('node:path');
 
+const isFirstRun = require('electron-first-run')();
+const Store = require('electron-store');
+const themeStore = new Store({name: 'theme'});
+if(isFirstRun || themeStore.get('theme', 'none') === 'none') themeStore.set('theme', 'light');
 const logger = require('electron-log');
 const contextMenu = require('electron-context-menu');
 
@@ -227,7 +231,8 @@ app.whenReady().then(async () => {
 
     try {
         await deltaUpdater.boot({
-            splashScreen: true
+            splashScreen: true,
+            darkMode: themeStore.get('theme', 'none') === 'dark',
         });
     } catch (error) {
         logger.error(error);
@@ -236,6 +241,11 @@ app.whenReady().then(async () => {
     createWindow();
 
     createView();
+
+    view.webContents.executeJavaScript(`document.querySelector('html').classList.contains('black')`).then((res) => {
+        if(res) themeStore.set('theme', 'dark');
+        else themeStore.set('theme', 'light');
+    });
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
