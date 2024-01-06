@@ -83,6 +83,11 @@ const handleZoom = (type) => {
     }
 };
 
+const toggleDevTools = () => {
+    if (view.webContents.isDevToolsOpened()) view.webContents.closeDevTools();
+    else view.webContents.openDevTools();
+};
+
 const setContextMenu = (target = undefined) => {
     contextMenu({
         window: target,
@@ -138,6 +143,11 @@ const setContextMenu = (target = undefined) => {
                         click: () => handleZoom('out')
                     }
                 ]
+            },
+            {
+                label: 'Console de développement',
+                visible: true,
+                click: () => toggleDevTools()
             },
             {
                 type: 'separator',
@@ -226,6 +236,13 @@ const handleURL = (url) => {
     return {action: 'deny'};
 };
 
+const checkTheme = () => {
+    view.webContents.executeJavaScript(`document.querySelector('html').classList.contains('black')`).then((res) => {
+        if(res) themeStore.set('theme', 'dark');
+        else themeStore.set('theme', 'light');
+    });
+};
+
 app.whenReady().then(async () => {
     setContextMenu();
 
@@ -242,13 +259,14 @@ app.whenReady().then(async () => {
 
     createView();
 
-    view.webContents.executeJavaScript(`document.querySelector('html').classList.contains('black')`).then((res) => {
-        if(res) themeStore.set('theme', 'dark');
-        else themeStore.set('theme', 'light');
-    });
+    checkTheme();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    });
+
+    win.on('close', () => {
+        checkTheme();
     });
 
     /// IPC
