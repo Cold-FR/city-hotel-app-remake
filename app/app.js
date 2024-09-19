@@ -1,5 +1,4 @@
-const {app, BrowserWindow, BrowserView, dialog, clipboard} = require('electron');
-const ipc = require('electron').ipcMain;
+const {app, BrowserWindow, WebContentsView, dialog, ipcMain, shell} = require('electron');
 const path = require('node:path');
 
 const isFirstRun = require('electron-first-run')();
@@ -13,8 +12,6 @@ const DeltaUpdater = require('@electron-delta/updater');
 const deltaUpdater = new DeltaUpdater({
     logger
 });
-/*const debug = require('electron-debug');
-debug({isEnabled: true, showDevTools: false});*/
 
 let win = null;
 let view = null;
@@ -118,7 +115,7 @@ const setContextMenu = (target = undefined) => {
                 label: 'Rejoindre CityCom',
                 visible: true,
                 icon: path.join(__dirname, `/assets/images/buttons/discord.png`),
-                click: () => require('electron').shell.openExternal('https://discord.gg/EDtGr4Cr7V')
+                click: () => shell.openExternal('https://discord.gg/EDtGr4Cr7V')
             },
             {
                 label: 'Zoom',
@@ -156,7 +153,7 @@ const setContextMenu = (target = undefined) => {
             {
                 label: 'Ouvrir l\'image dans un nouvel onglet (Navigateur par défaut)',
                 visible: parameters.mediaType === 'image',
-                click: () => require('electron').shell.openExternal(`${parameters.srcURL}`)
+                click: () => shell.openExternal(`${parameters.srcURL}`)
             }
         ],
         labels: {
@@ -218,9 +215,9 @@ const handleURL = (url) => {
     const urlFormat = new URL(url);
 
     if (!urlFormat.hostname.includes('habbocity.me') && !urlFormat.hostname.includes('funados-radio.fr') && urlFormat.href !== 'about:blank') {
-        require('electron').shell.openExternal(urlFormat.href);
+        shell.openExternal(urlFormat.href);
     } else if (urlFormat.pathname === '/discord') {
-        require('electron').shell.openExternal('https://discord.gg/EDtGr4Cr7V');
+        shell.openExternal('https://discord.gg/EDtGr4Cr7V');
     } else {
         return {
             action: 'allow',
@@ -270,14 +267,11 @@ app.whenReady().then(async () => {
     });
 
     /// IPC
-    ipc.on('fullscreen', () => toggleFullScreen());
-    ///ipc.on('clearCache', () => clearCache());
-
-    ipc.on('zoomIn', () => handleZoom('in'));
-    ipc.on('zoomReset', () => handleZoom('reset'));
-    ipc.on('zoomOut', () => handleZoom('out'));
-
-    ipc.on('reloadView', () => view.webContents.reload());
+    ipcMain.on('fullscreen', () => toggleFullScreen());
+    ipcMain.on('zoomIn', () => handleZoom('in'));
+    ipcMain.on('zoomReset', () => handleZoom('reset'));
+    ipcMain.on('zoomOut', () => handleZoom('out'));
+    ipcMain.on('reloadView', () => reloadView());
 });
 
 app.on('window-all-closed', () => {
