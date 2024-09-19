@@ -39,30 +39,40 @@ const createWindow = () => {
 };
 
 const createView = () => {
-    const [width, height] = win.getSize();
-    view = new BrowserView({
+    view = new WebContentsView({
         webPreferences: {
             preload: path.join(__dirname, 'preload.js')
         }
     });
-    win.setBrowserView(view);
+    win.contentView.addChildView(view);
+    view.webContents.loadURL('https://www.habbocity.me').then(() => view.webContents.focus());
+    view.webContents.on('did-finish-load', () => setContextMenu(view));
+
+    win.on('maximize', () => resizeView());
+    win.on('unmaximize', () => resizeView());
+    win.on('will-resize', (e, newBounds) => {
+        view.setBounds({
+            x: 0,
+            y: 0,
+            width: newBounds.width - 16,
+            height: newBounds.height - 39,
+        });
+    });
+};
+
+const reloadView = () => {
+    view.webContents.reload();
+    setContextMenu(view);
+};
+
+const resizeView = () => {
+    const [width, height] = win.getSize();
     view.setBounds({
         x: 0,
         y: 0,
         width: width - 16,
         height: height - 39,
     });
-    view.setAutoResize({
-        width: true,
-        height: true
-    });
-    view.webContents.loadURL('https://www.habbocity.me').then(() => view.webContents.focus());
-    view.webContents.on('did-finish-load', () => setContextMenu(view));
-};
-
-const reloadView = () => {
-    view.webContents.reload();
-    setContextMenu(view);
 };
 
 const handleZoom = (type) => {
