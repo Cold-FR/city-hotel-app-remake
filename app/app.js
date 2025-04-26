@@ -98,7 +98,7 @@ const toggleDevTools = () => {
 const setContextMenu = (target = undefined) => {
     contextMenu({
         window: target,
-        prepend: (defaultActions, parameters, browserWindow) => [
+        prepend: (defaultActions, parameters) => [
             {
                 label: 'Version - ' + app.getVersion(),
                 visible: true,
