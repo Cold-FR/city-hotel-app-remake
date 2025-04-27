@@ -4,7 +4,7 @@ const path = require('node:path');
 const isFirstRun = require('electron-first-run')();
 const Store = require('electron-store');
 const themeStore = new Store({name: 'theme'});
-if(isFirstRun || themeStore.get('theme', 'none') === 'none') themeStore.set('theme', 'light');
+if (isFirstRun || themeStore.get('theme', 'none') === 'none') themeStore.set('theme', 'light');
 const logger = require('electron-log');
 const contextMenu = require('electron-context-menu');
 
@@ -223,12 +223,12 @@ const clearCache = async () => {
 };
 
 const toggleFullScreen = () => {
-    if(win.isFullScreen()) {
+    if (win.isFullScreen()) {
         win.setFullScreen(false);
         const [width, height] = win.getSize();
         view.setBounds({
-            x:0,
-            y:0,
+            x: 0,
+            y: 0,
             width: width - 16,
             height: height - 39,
         });
@@ -236,8 +236,8 @@ const toggleFullScreen = () => {
         win.setFullScreen(true);
         const [width, height] = win.getSize();
         view.setBounds({
-            x:0,
-            y:0,
+            x: 0,
+            y: 0,
             width: width,
             height: height
         });
@@ -268,7 +268,7 @@ const handleURL = (url) => {
 
 const checkTheme = () => {
     view.webContents.executeJavaScript(`document.querySelector('html').classList.contains('black')`).then((res) => {
-        if(res) themeStore.set('theme', 'dark');
+        if (res) themeStore.set('theme', 'dark');
         else themeStore.set('theme', 'light');
     });
 };
