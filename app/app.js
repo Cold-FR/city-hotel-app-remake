@@ -123,7 +123,7 @@ const setContextMenu = (target = undefined) => {
         window: target,
         prepend: (defaultActions, parameters) => [
             {
-                label: 'Version - ' + app.getVersion(),
+                label: `Version ${app.getVersion()} - Développé par Cold`,
                 visible: true,
             },
             {
