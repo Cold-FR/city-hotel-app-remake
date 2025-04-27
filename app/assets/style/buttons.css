@@ -1,37 +1,31 @@
 #buttons {
-    z-index: 9999999;
-    margin-top: 20px;
     position: fixed;
-    background: rgba(58, 56, 50, 0.9);
-    right: 0;
-    bottom: 100px;
+    top: 0;
+    background: rgba(58, 56, 50, .9);
     width: 50px;
-    max-width: 0px;
-    transition: .1s;
-}
-
-#buttons.opened {
-    max-width: 50px;
+    left: 0;
+    margin-right: 14px;
 }
 
 #buttons.opened #close-button {
-    transform: scaleX(-1);
+    transform: scaleX(1);
 }
 
 #close {
     position: absolute;
     height: 100%;
-    border-radius: 8px 0 0 8px;
+    border-radius: 0 8px 8px 0;
     width: 14px;
     background: #3a3832;
     display: flex;
     justify-content: center;
     align-items: center;
-    left: -14px;
+    right: -14px;
     cursor: pointer;
 }
 
 #close #close-button {
+    transform: scaleX(-1);
     position: absolute;
     height: 10px;
     width: 7px;
@@ -40,7 +34,6 @@
 
 #buttons .button {
     position: relative;
-    z-index: 9999;
     height: 36px;
     left: 8px;
     margin-top: 6px;
@@ -67,7 +60,7 @@
     display: none;
     padding: 8px 10px;
     text-align: center;
-    right: 60px;
+    left: 60px;
     width: 100px;
     box-shadow: 0 0 6px #0000006e;
     border-radius: 10px;
@@ -75,7 +68,7 @@
 
 #buttons .button .tooltip .arrow {
     width: 0;
-    right: -6px;
+    left: -6px;
     top: 12px;
     height: 0;
     position: absolute;
@@ -101,6 +94,10 @@
     background: url('../images/buttons/reload.png');
 }
 
+#buttons .button .discord {
+    background: url('../images/buttons/discord.png');
+}
+
 #buttons .button .cache {
     background: url('../images/buttons/cache.png');
 }
@@ -111,22 +108,6 @@
 
 #buttons .button .reset {
     background: url('../images/buttons/reset.png');
-}
-
-#buttons .button .all {
-    background: url('../images/buttons/all.png');
-}
-
-#buttons .button .mentions {
-    background: url('../images/buttons/mentions.png');
-}
-
-#buttons .button .alerts {
-    background: url('../images/buttons/alerts.png');
-}
-
-#buttons .button .nothing {
-    background: url('../images/buttons/nothing.png');
 }
 
 #buttons .button:hover {
