@@ -15,6 +15,7 @@ const deltaUpdater = new DeltaUpdater({
 
 let win = null;
 let view = null;
+let overlay = null;
 
 app.commandLine.appendSwitch('enable-hardware-overlays');
 
@@ -57,7 +58,23 @@ const createView = () => {
             width: newBounds.width - 16,
             height: newBounds.height - 39,
         });
+        overlay.setBounds({
+            x: 0,
+            y: newBounds.height - 650,
+            width: 200,
+            height: 300,
+        });
     });
+    win.on('resized', () => resizeView());
+
+    overlay = new WebContentsView({
+        webPreferences: {
+            preload: path.join(__dirname, 'preload_overlay.js')
+        }
+    });
+    overlay.setBackgroundColor('#00000000');
+    win.contentView.addChildView(overlay);
+    overlay.webContents.loadFile(path.join(__dirname, 'overlay.html'));
 };
 
 const reloadView = () => {
@@ -72,6 +89,12 @@ const resizeView = () => {
         y: 0,
         width: width - 16,
         height: height - 39,
+    });
+    overlay.setBounds({
+        x: 0,
+        y: height - 650,
+        width: 200,
+        height: 300,
     });
 };
 
@@ -277,11 +300,31 @@ app.whenReady().then(async () => {
     });
 
     /// IPC
+    ipcMain.on('clearCache', () => clearCache());
     ipcMain.on('fullscreen', () => toggleFullScreen());
     ipcMain.on('zoomIn', () => handleZoom('in'));
     ipcMain.on('zoomReset', () => handleZoom('reset'));
     ipcMain.on('zoomOut', () => handleZoom('out'));
     ipcMain.on('reloadView', () => reloadView());
+    ipcMain.on('discord', () => shell.openExternal('https://discord.gg/EDtGr4Cr7V'));
+    ipcMain.on('closeOverlay', (e, opened) => {
+        const [width, height] = win.getSize();
+        if (opened) {
+            overlay.setBounds({
+                x: 0,
+                y: height - 650,
+                width: 200,
+                height: 300,
+            });
+        } else {
+            overlay.setBounds({
+                x: -50,
+                y: height - 650,
+                width: 200,
+                height: 300,
+            });
+        }
+    });
 });
 
 app.on('window-all-closed', () => {
