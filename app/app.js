@@ -318,9 +318,9 @@ app.whenReady().then(async () => {
             });
         } else {
             overlay.setBounds({
-                x: -50,
+                x: 0,
                 y: height - 650,
-                width: 200,
+                width: 14,
                 height: 300,
             });
         }
