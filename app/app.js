@@ -151,7 +151,7 @@ const setContextMenu = (target = undefined) => {
                 click: () => shell.openExternal('https://discord.gg/EDtGr4Cr7V')
             },
             {
-                label: 'Zoom',
+                label: `Zoom (${view.webContents.getZoomFactor() * 100}%)`,
                 visible: true,
                 submenu: [
                     {
