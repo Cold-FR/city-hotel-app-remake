@@ -102,10 +102,10 @@ const handleZoom = (type) => {
     let factor = view.webContents.getZoomFactor();
     switch (type) {
         case 'in':
-            if (factor < 3) view.webContents.setZoomFactor(factor + 0.01);
+            if (factor < 3) view.webContents.setZoomFactor(parseFloat((factor + 0.01).toFixed(2)));
             break;
         case 'out':
-            if (factor > 0.3) view.webContents.setZoomFactor(factor - 0.01);
+            if (factor > 0.3) view.webContents.setZoomFactor(parseFloat((factor - 0.01).toFixed(2)));
             break;
         case 'reset':
             view.webContents.setZoomFactor(1)
