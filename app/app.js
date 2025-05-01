@@ -81,13 +81,13 @@ const reloadView = () => {
     setContextMenu(view);
 };
 
-const resizeView = () => {
+const resizeView = (fullscreen = false) => {
     const [width, height] = win.getSize();
     view.setBounds({
         x: 0,
         y: 0,
-        width: width - 16,
-        height: height - 39,
+        width: fullscreen ? width : width - 16,
+        height: fullscreen ? height : height - 39,
     });
     resizeOverlay();
 };
@@ -229,22 +229,10 @@ const clearCache = async () => {
 const toggleFullScreen = () => {
     if (win.isFullScreen()) {
         win.setFullScreen(false);
-        const [width, height] = win.getSize();
-        view.setBounds({
-            x: 0,
-            y: 0,
-            width: width - 16,
-            height: height - 39,
-        });
+        resizeView();
     } else {
         win.setFullScreen(true);
-        const [width, height] = win.getSize();
-        view.setBounds({
-            x: 0,
-            y: 0,
-            width: width,
-            height: height
-        });
+        resizeView(true);
     }
 };
 
