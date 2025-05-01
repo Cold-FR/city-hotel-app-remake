@@ -3,8 +3,10 @@ const path = require('node:path');
 
 const isFirstRun = require('electron-first-run')();
 const Store = require('electron-store');
-const themeStore = new Store({name: 'theme'});
-if (isFirstRun || themeStore.get('theme', 'none') === 'none') themeStore.set('theme', 'light');
+const store = new Store({name: 'theme'});
+if (isFirstRun || store.get('theme', 'none') === 'none') store.set('theme', 'light');
+if (isFirstRun || store.get('overlayOpened', 'none') === 'none') store.set('overlayOpened', true);
+
 const logger = require('electron-log');
 const contextMenu = require('electron-context-menu');
 
@@ -16,6 +18,7 @@ const deltaUpdater = new DeltaUpdater({
 let win = null;
 let view = null;
 let overlay = null;
+let overlayOpened = store.get('overlayOpened');
 
 app.commandLine.appendSwitch('enable-hardware-overlays');
 
@@ -58,12 +61,7 @@ const createView = () => {
             width: newBounds.width - 16,
             height: newBounds.height - 39,
         });
-        overlay.setBounds({
-            x: 0,
-            y: newBounds.height - 650,
-            width: 200,
-            height: 300,
-        });
+        resizeOverlay();
     });
     win.on('resized', () => resizeView());
 
@@ -75,6 +73,7 @@ const createView = () => {
     overlay.setBackgroundColor('#00000000');
     win.contentView.addChildView(overlay);
     overlay.webContents.loadFile(path.join(__dirname, 'overlay.html'));
+    overlay.webContents.send('overlayOpened', overlayOpened);
 };
 
 const reloadView = () => {
@@ -90,10 +89,15 @@ const resizeView = () => {
         width: width - 16,
         height: height - 39,
     });
+    resizeOverlay();
+};
+
+const resizeOverlay = () => {
+    const [, height] = win.getSize();
     overlay.setBounds({
         x: 0,
         y: height - 650,
-        width: 200,
+        width: overlayOpened ? 200 : 14,
         height: 300,
     });
 };
@@ -268,8 +272,8 @@ const handleURL = (url) => {
 
 const checkTheme = () => {
     view.webContents.executeJavaScript(`document.querySelector('html').classList.contains('black')`).then((res) => {
-        if (res) themeStore.set('theme', 'dark');
-        else themeStore.set('theme', 'light');
+        if (res) store.set('theme', 'dark');
+        else store.set('theme', 'light');
     });
 };
 
@@ -279,7 +283,7 @@ app.whenReady().then(async () => {
     try {
         await deltaUpdater.boot({
             splashScreen: true,
-            darkMode: themeStore.get('theme', 'none') === 'dark',
+            darkMode: store.get('theme', 'none') === 'dark',
         });
     } catch (error) {
         logger.error(error);
@@ -307,23 +311,11 @@ app.whenReady().then(async () => {
     ipcMain.on('zoomOut', () => handleZoom('out'));
     ipcMain.on('reloadView', () => reloadView());
     ipcMain.on('discord', () => shell.openExternal('https://discord.gg/EDtGr4Cr7V'));
-    ipcMain.on('closeOverlay', (e, opened) => {
-        const [width, height] = win.getSize();
-        if (opened) {
-            overlay.setBounds({
-                x: 0,
-                y: height - 650,
-                width: 200,
-                height: 300,
-            });
-        } else {
-            overlay.setBounds({
-                x: 0,
-                y: height - 650,
-                width: 14,
-                height: 300,
-            });
-        }
+    ipcMain.on('toggleOverlay', (e, opened) => {
+        store.set('overlayOpened', opened);
+        overlayOpened = opened;
+
+        resizeOverlay();
     });
 });
 

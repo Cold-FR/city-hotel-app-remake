@@ -2,7 +2,7 @@ const closeBtn = document.getElementById('close');
 if (closeBtn) {
     closeBtn.addEventListener('click', () => {
         document.getElementById('buttons').classList.toggle('opened');
-        window.electronAPI.sendClose(document.getElementById('buttons').classList.contains('opened'));
+        window.electronAPI.sendToggle(document.getElementById('buttons').classList.contains('opened'));
     });
 }
 
