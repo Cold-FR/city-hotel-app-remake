@@ -8,5 +8,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
     sendZoomReset: () => ipcRenderer.send('zoomReset'),
     sendReloadView: () => ipcRenderer.send('reloadView'),
     sendDiscord: () => ipcRenderer.send('discord'),
-    sendClose: (opened) => ipcRenderer.send('closeOverlay', opened),
+    sendToggle: (opened) => ipcRenderer.send('toggleOverlay', opened),
+});
+
+ipcRenderer.on('overlayOpened', (event, opened) => {
+    const buttons = document.getElementById('buttons');
+
+    if (buttons) buttons.classList.toggle('opened', opened);
 });
